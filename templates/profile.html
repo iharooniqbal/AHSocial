@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A&H Social - Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="top-nav">
+  <div class="logo">A&H</div>
+  <div class="page-title">Profile</div>
+  <div class="theme-toggle" id="themeToggle">🌙</div>
+</header>
+
+<main class="content profile-page">
+  <img src="{{ url_for('static', filename='uploads/user.png') }}" class="profile-pic" alt="">
+  <h2>@your_username</h2>
+  <p>Bio: This is your profile bio.</p>
+
+  <div class="profile-stats">
+    <div><strong>{{ posts|length }}</strong><br>Posts</div>
+  </div>
+
+  <div class="profile-grid">
+    {% for post in posts %}
+      <img src="{{ post.image }}" alt="{{ post.title }}">
+    {% endfor %}
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('index') }}">🏠<span>Home</span></a>
+  <a href="{{ url_for('explore') }}">🔍<span>Explore</span></a>
+  <a href="{{ url_for('upload') }}" class="upload-btn">➕</a>
+  <a href="{{ url_for('feedback') }}">💬<span>Feedback</span></a>
+  <a href="{{ url_for('profile') }}" class="active">👤<span>Profile</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

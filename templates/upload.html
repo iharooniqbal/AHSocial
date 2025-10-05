@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A&H Social - Upload</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="top-nav">
+  <div class="logo">A&H</div>
+  <div class="page-title">Upload</div>
+  <div class="theme-toggle" id="themeToggle">🌙</div>
+</header>
+
+<main class="content">
+  <h2>Upload a Post</h2>
+  <form class="upload-form" action="{{ url_for('upload') }}" method="POST">
+    <input type="text" placeholder="Post title" name="title" required>
+    <input type="url" placeholder="Image URL" name="image" required>
+    <button type="submit">Upload</button>
+  </form>
+</main>
+
+<nav class="bottom-nav">
+  <a href="{{ url_for('index') }}">🏠<span>Home</span></a>
+  <a href="{{ url_for('explore') }}">🔍<span>Explore</span></a>
+  <a href="{{ url_for('upload') }}" class="upload-btn active">➕</a>
+  <a href="{{ url_for('feedback') }}">💬<span>Feedback</span></a>
+  <a href="{{ url_for('profile') }}">👤<span>Profile</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
