@@ -18,3 +18,5 @@ if (themeToggle) {
     }
   });
 }
+
+console.log("main.js loaded");

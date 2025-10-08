@@ -15,12 +15,13 @@
 
 <main class="content">
   <h2>Upload a Post</h2>
-  <form class="upload-form" action="{{ url_for('upload') }}" method="POST">
-    <input type="text" placeholder="Post title" name="title" required>
-    <input type="url" placeholder="Image URL" name="image" required>
+  <form class="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="media" accept="image/*,video/*" required>
+    <input type="text" placeholder="Write a caption..." name="caption" required>
     <button type="submit">Upload</button>
   </form>
 </main>
+
 
 <nav class="bottom-nav">
   <a href="{{ url_for('index') }}">🏠<span>Home</span></a>

@@ -8,3 +8,16 @@
     "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcdef"
   }
 ]
+
+[
+  {
+    "username": "A&H Social",
+    "caption": "Our first post on A&H Social! 🚀",
+    "image": "static/uploads/sample1.jpg"
+  },
+  {
+    "username": "Abdullah Haroon",
+    "caption": "Welcome to the community 💙",
+    "image": "static/uploads/sample2.jpg"
+  }
+]
