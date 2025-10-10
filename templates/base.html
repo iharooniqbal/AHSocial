@@ -12,6 +12,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="/">A&H <span class="text-warning">Connect</span></a>
+            {% if user %}
+  <p>Welcome, {{ user }} | <a href="{{ url_for('logout') }}">Logout</a></p>
+{% else %}
+  <a href="{{ url_for('login') }}">Login</a>
+  <a href="{{ url_for('signup') }}">Sign Up</a>
+{% endif %}
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>

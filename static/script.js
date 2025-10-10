@@ -20,3 +20,28 @@ if (themeToggle) {
 }
 
 console.log("main.js loaded");
+
+
+function toggleLike(btn) {
+  if (btn.classList.contains('liked')) {
+    btn.classList.remove('liked');
+    btn.textContent = '❤️ Like';
+  } else {
+    btn.classList.add('liked');
+    btn.textContent = '💖 Liked';
+  }
+}
+
+function toggleComment(id) {
+  const section = document.getElementById(`comment-${id}`);
+  if (section.style.display === 'none') {
+    section.style.display = 'block';
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+function sharePost(url) {
+  navigator.clipboard.writeText(url);
+  alert("Post link copied to clipboard!");
+}

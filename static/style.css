@@ -107,3 +107,56 @@ body.dark .post { background:#1f1f1f; }
   object-fit: cover;
   border-radius: 10px;
 }
+
+.post {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #fff;
+}
+
+.post img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.post-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.post-actions button:hover {
+  transform: scale(1.1);
+}
+
+.liked {
+  color: red;
+}
+
+.comment-section {
+  margin-top: 10px;
+}
+
+.comment-input {
+  width: 80%;
+  padding: 5px;
+}
+
+.send-comment-btn {
+  padding: 5px 10px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
