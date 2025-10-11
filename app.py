@@ -146,4 +146,15 @@ if __name__ == '__main__':
         if not os.path.exists(f):
             with open(f, 'w') as j:
                 json.dump([], j)
+                # --- Ensure required files/folders exist ---
+os.makedirs(os.path.join('static', 'uploads'), exist_ok=True)
+
+if not os.path.exists(os.path.join('static', 'posts.json')):
+    with open(os.path.join('static', 'posts.json'), 'w') as f:
+        json.dump([], f)
+
+if not os.path.exists(os.path.join('static', 'users.json')):
+    with open(os.path.join('static', 'users.json'), 'w') as f:
+        json.dump([], f)
+
     app.run(debug=True)
