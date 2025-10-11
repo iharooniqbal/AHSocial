@@ -15,7 +15,40 @@
 
 <main class="content explore-grid">
   {% for post in posts %}
-    <img src="{{ post.image }}" alt="{{ post.title }}">
+    <div class="post">
+      {% if post.filename.endswith('.mp4') or post.filename.endswith('.webm') or post.filename.endswith('.mov') or post.filename.endswith('.avi') %}
+        <video controls width="100%" style="border-radius:10px;">
+          <source src="{{ url_for('static', filename='uploads/' + post.filename) }}" type="video/mp4">
+          Your browser does not support video.
+        </video>
+      {% else %}
+        <img src="{{ url_for('static', filename='uploads/' + post.filename) }}" alt="{{ post.caption }}" style="width:100%; border-radius:10px;">
+      {% endif %}
+
+      <div class="post-info">
+        <p><strong>@{{ post.user }}</strong></p>
+        <p>{{ post.caption }}</p>
+      </div>
+
+      <div class="post-actions">
+        <form action="{{ url_for('like_post', filename=post.filename) }}" method="POST" style="display:inline;">
+          <button type="submit">❤️ {{ post.likes|length if post.likes else 0 }} Likes</button>
+        </form>
+
+        <form action="{{ url_for('comment_post', filename=post.filename) }}" method="POST" style="display:inline;">
+          <input type="text" name="comment" placeholder="Add comment..." required>
+          <button type="submit">💬 Comment</button>
+        </form>
+      </div>
+
+      {% if post.comments %}
+      <div class="comments">
+        {% for c in post.comments %}
+          <p><strong>@{{ c.user }}:</strong> {{ c.text }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
   {% endfor %}
 </main>
 

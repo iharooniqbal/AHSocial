@@ -37,17 +37,28 @@
         <!-- Image post -->
         <img src="{{ url_for('static', filename='uploads/' + post.filename) }}" alt="Post">
       {% endif %}
-
+    <!-- Post details -->
+      <div class="post-info">
+        <p><strong>@{{ post.user }}</strong></p>
+        <p>{{ post.caption }}</p>
+      </div>
       <div class="post-actions">
-        <button class="like-btn" onclick="toggleLike(this)">❤️ Like</button>
-        <button class="comment-btn" onclick="toggleComment('{{ post.filename }}')">💬 Comment</button>
+        <form action="{{ url_for('like_post', filename=post.filename) }}" method="POST" style="display:inline;">
+    <button type="submit">❤️ {{ post.likes|length }} Likes</button>
+  </form>
+
+  <form action="{{ url_for('comment_post', filename=post.filename) }}" method="POST" style="display:inline;">
+    <input type="text" name="comment" placeholder="Add comment..." required>
+    <button type="submit">💬 Comment</button>
+  </form>
         <button class="share-btn" onclick="sharePost('{{ url_for('static', filename='uploads/' + post.filename) }}')">🔄 Share</button>
       </div>
 
-      <div class="comment-section" id="comment-{{ post.filename }}" style="display:none;">
-        <input type="text" placeholder="Write a comment..." class="comment-input">
-        <button class="send-comment-btn">Send</button>
-      </div>
+      <div class="comments">
+    {% for c in post.comments %}
+      <p><strong>@{{ c.user }}:</strong> {{ c.text }}</p>
+    {% endfor %}
+  </div>
     </div>
   {% endfor %}
 </div>
