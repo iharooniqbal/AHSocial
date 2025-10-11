@@ -66,12 +66,12 @@ def signup():
         # Check if user exists
         for u in users:
             if u['username'] == username or u['email'] == email:
-                flash('Username or email already exists!')
+                flash('Username or email already exists in HAR NECT!')
                 return redirect(url_for('signup'))
 
         users.append({'username': username, 'email': email, 'password': password})
         save_json(USERS_DB, users)
-        flash('Signup successful! You can now login.')
+        flash('Signup successful! You can now login to HAR NECT.')
         return redirect(url_for('login'))
     return render_template('signup.html')
 
@@ -87,27 +87,24 @@ def login():
             if (u['username'] == username or u['email'] == username) and u['password'] == password:
                 session.permanent = True  # 👈 this line makes the session last longer
                 session['user'] = u['username']
-                flash('Login successful!')
+                flash('Login successful! Welcome to HAR NECT.')
                 return redirect(url_for('index'))
 
-        flash('Invalid username or password.')
+        flash('Invalid username or password for HAR NECT.')
         return redirect(url_for('login'))
 
     return render_template('login.html')
 
-
-
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    flash('Logged out successfully.')
+    flash('Logged out successfully from HAR NECT.')
     return redirect(url_for('login'))
-
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if 'user' not in session:
-        flash('Please login first.')
+        flash('Please login first to HAR NECT.')
         return redirect(url_for('login'))
 
     if request.method == 'POST':
@@ -115,7 +112,7 @@ def upload():
         file = request.files.get('media')
 
         if not file or file.filename == '':
-            flash('Please choose a file')
+            flash('Please choose a file to upload to HAR NECT')
             return redirect(url_for('upload'))
 
         if allowed_file(file.filename):
@@ -134,10 +131,10 @@ def upload():
             })
 
             save_json(POSTS_DB, posts)
-            flash('Upload successful!')
+            flash('Upload successful to HAR NECT!')
             return redirect(url_for('index'))
         else:
-            flash('File type not allowed')
+            flash('File type not allowed in HAR NECT')
             return redirect(url_for('upload'))
 
     return render_template('upload.html')
@@ -147,7 +144,7 @@ def upload():
 @app.route('/like/<filename>', methods=['POST'])
 def like_post(filename):
     if 'user' not in session:
-        flash("Please login first.")
+        flash("Please login first to HAR NECT.")
         return redirect(url_for('login'))
 
     posts = load_json(POSTS_DB)
@@ -168,12 +165,12 @@ def like_post(filename):
 @app.route('/comment/<filename>', methods=['POST'])
 def comment_post(filename):
     if 'user' not in session:
-        flash("Please login first.")
+        flash("Please login first to HAR NECT.")
         return redirect(url_for('login'))
 
     comment = request.form.get('comment', '').strip()
     if not comment:
-        flash("Comment cannot be empty.")
+        flash("Comment cannot be empty in HAR NECT.")
         return redirect(url_for('index'))
 
     posts = load_json(POSTS_DB)
@@ -200,7 +197,7 @@ def explore():
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
     if request.method == 'POST':
-        flash('Feedback received! Thank you.')
+        flash('Feedback received! Thank you for contributing to HAR NECT.')
         return redirect(url_for('feedback'))
     return render_template('feedback.html')
 
