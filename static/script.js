@@ -21,26 +21,29 @@ if (themeToggle) {
 
 console.log("main.js loaded");
 
-
+// Smooth Like toggle
 function toggleLike(btn) {
+  btn.classList.toggle('liked');
   if (btn.classList.contains('liked')) {
-    btn.classList.remove('liked');
-    btn.textContent = '❤️ Like';
-  } else {
-    btn.classList.add('liked');
     btn.textContent = '💖 Liked';
+    btn.style.transform = 'scale(1.2)';
+    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+  } else {
+    btn.textContent = '❤️ Like';
+    btn.style.transform = 'scale(0.9)';
+    setTimeout(() => btn.style.transform = 'scale(1)', 200);
   }
 }
 
+// Smooth Comment toggle
 function toggleComment(id) {
   const section = document.getElementById(`comment-${id}`);
-  if (section.style.display === 'none') {
-    section.style.display = 'block';
-  } else {
-    section.style.display = 'none';
-  }
+  if (!section) return;
+
+  section.classList.toggle('show');
 }
 
+// Share post
 function sharePost(url) {
   navigator.clipboard.writeText(url);
   alert("Post link copied to clipboard!");
