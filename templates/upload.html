@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HAR NECT - Upload</title>
+  <title>HARNECT - Upload</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="top-nav">
-  <div class="logo">HAR NECT</div>
+  <div class="logo">HARNECT</div>
   <div class="page-title">Upload</div>
   <div class="theme-toggle" id="themeToggle">🌙</div>
 </header>
@@ -16,19 +16,28 @@
 <main class="content">
   <h2>Upload a Post</h2>
   <form class="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+    <!-- File input -->
     <input type="file" name="media" accept="image/*,video/*" required>
-    <input type="text" placeholder="Write a caption..." name="caption" required>
+
+    <!-- Caption -->
+    <input type="text" placeholder="Write a caption..." name="caption">
+
+    <!-- Story checkbox -->
+    <label>
+      <input type="checkbox" name="is_story" value="1"> Upload as Story
+    </label>
+
+    <!-- Submit -->
     <button type="submit">Upload</button>
   </form>
 </main>
-
 
 <nav class="bottom-nav">
   <a href="{{ url_for('index') }}">🏠<span>Home</span></a>
   <a href="{{ url_for('explore') }}">🔍<span>Explore</span></a>
   <a href="{{ url_for('upload') }}" class="upload-btn active">➕</a>
   <a href="{{ url_for('feedback') }}">💬<span>Feedback</span></a>
-  <a href="{{ url_for('profile') }}">👤<span>Profile</span></a>
+  <a href="{% if user %}{{ url_for('profile', username=user) }}{% else %}{{ url_for('login') }}{% endif %}">👤<span>Profile</span></a>
 </nav>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>

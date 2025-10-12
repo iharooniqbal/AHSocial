@@ -3,23 +3,36 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HAR NECT - Feedback</title>
+  <title>HARNECT - Feedback</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="top-nav">
-  <div class="logo">HAR NECT</div>
+   <div class="logo"><span class="logo-blue">HAR</span><span class="logo-brown">NECT</span></div>
   <div class="page-title">Feedback</div>
   <div class="theme-toggle" id="themeToggle">🌙</div>
 </header>
 
 <main class="content">
   <h2>Give Feedback</h2>
-  <form class="feedback-form" action="{{ url_for('feedback') }}" method="POST">
-    <input type="text" placeholder="Your name" name="name" required>
+  <form class="feedback-form" id="feedbackForm">
+    <input type="text" placeholder="Your name" name="name">
     <textarea placeholder="Write your feedback..." name="message" required></textarea>
     <button type="submit">Submit</button>
   </form>
+
+  <h2>All Feedback</h2>
+  <div class="feedback-list" id="feedbackList">
+    {% if feedbacks %}
+      {% for f in feedbacks %}
+        <div class="feedback-item">
+          <p><strong>{{ f.name }}:</strong> {{ f.message }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No feedback yet. Be the first to give feedback!</p>
+    {% endif %}
+  </div>
 </main>
 
 <nav class="bottom-nav">
@@ -27,9 +40,46 @@
   <a href="{{ url_for('explore') }}">🔍<span>Explore</span></a>
   <a href="{{ url_for('upload') }}" class="upload-btn">➕</a>
   <a href="{{ url_for('feedback') }}" class="active">💬<span>Feedback</span></a>
-  <a href="{{ url_for('profile') }}">👤<span>Profile</span></a>
+  <a href="{{ url_for('profile', username=user) }}">👤<span>Profile</span></a>
 </nav>
 
+<script>
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackList = document.getElementById('feedbackList');
+
+feedbackForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  const formData = new FormData(feedbackForm);
+  const data = {
+    name: formData.get('name') || 'Anonymous',
+    message: formData.get('message') || ''
+  };
+  if (!data.message.trim()) return;
+
+  fetch("{{ url_for('feedback') }}", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(feedbacks => {
+    feedbackList.innerHTML = '';
+    if(feedbacks.length === 0){
+      feedbackList.innerHTML = '<p>No feedback yet. Be the first to give feedback!</p>';
+      return;
+    }
+    feedbacks.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'feedback-item';
+      div.innerHTML = `<p><strong>${f.name}:</strong> ${f.message}</p>`;
+      feedbackList.appendChild(div);
+    });
+    feedbackForm.reset();
+  })
+  .catch(err => console.error(err));
+});
+</script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

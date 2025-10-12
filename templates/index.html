@@ -2,75 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HAR NECT — Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HARNECT — Feed</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="top-nav">
-  <div class="logo"><span class="logo-blue">HAR</span><span class="logo-brown"> NECT</span></div>
+  <div class="logo">HARNECT</div>
   <div class="page-title">Home</div>
-  {% if user %}
-  <p>Welcome, {{ user }} | <a href="{{ url_for('logout') }}">Logout</a></p>
-{% else %}
-  <a href="{{ url_for('login') }}">Login</a>
-  <a href="{{ url_for('signup') }}">Sign Up</a>
-{% endif %}
   <div class="theme-toggle" id="themeToggle">🌙</div>
 </header>
 
-<main class="content">
-  <div class="stories">
-    <div class="story"><img src="{{ url_for('static', filename='uploads/user.png') }}" alt=""><p>You</p></div>
-  </div>
+<!-- Stories Section -->
+<div class="stories">
+  <!-- User's own story only if they have uploaded one -->
+  {% set user_story = None %}
+  {% for s in stories %}
+    {% if s.user == user %}
+      {% set user_story = s %}
+    {% endif %}
+  {% endfor %}
 
-  <div class="feed">
+  {% if user_story %}
+  <div class="story" onclick="openStory('{{ url_for('static', filename='uploads/' + user_story.filename) }}', 'You')">
+    <img src="{{ url_for('static', filename='uploads/' + user_story.filename) }}" alt="Your Story">
+    <p>You</p>
+  </div>
+  {% endif %}
+
+  <!-- Other users' stories -->
+  {% for story in stories %}
+    {% if story.user != user %}
+    <div class="story" onclick="openStory('{{ url_for('static', filename='uploads/' + story.filename) }}', '@{{ story.user }}')">
+      <img src="{{ url_for('static', filename='uploads/' + story.filename) }}" alt="@{{ story.user }} Story">
+      <p>@{{ story.user }}</p>
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+
+<main class="content feed">
   {% for post in posts %}
-    <div class="post">
-      {% if post.filename.endswith('.mp4') or post.filename.endswith('.webm') or post.filename.endswith('.ogg') %}
-        <!-- Video post -->
-        <video controls width="100%" style="border-radius: 10px;">
+    <div class="post" id="post-{{ post.filename }}">
+      {% if post.filename.endswith(('.mp4','.webm','.ogg','.avi')) %}
+        <video controls>
           <source src="{{ url_for('static', filename='uploads/' + post.filename) }}" type="video/mp4">
-          Your browser does not support the video tag.
+          Your browser does not support the video.
         </video>
       {% else %}
-        <!-- Image post -->
-        <img src="{{ url_for('static', filename='uploads/' + post.filename) }}" alt="Post">
+        <img src="{{ url_for('static', filename='uploads/' + post.filename) }}" alt="{{ post.caption }}">
       {% endif %}
-    <!-- Post details -->
+
       <div class="post-info">
         <p><strong>@{{ post.user }}</strong></p>
         <p>{{ post.caption }}</p>
       </div>
-      <div class="post-actions">
-        <form action="{{ url_for('like_post', filename=post.filename) }}" method="POST" style="display:inline;">
-    <button type="submit">❤️ {{ post.likes|length }} Likes</button>
-  </form>
 
-  <form action="{{ url_for('comment_post', filename=post.filename) }}" method="POST" style="display:inline;">
-    <input type="text" name="comment" placeholder="Add comment..." required>
-    <button type="submit">💬 Comment</button>
-  </form>
-        <button class="share-btn" onclick="sharePost('{{ url_for('static', filename='uploads/' + post.filename) }}')">🔄 Share</button>
+      <div class="post-actions">
+        <button class="like-btn {% if user in post.likes %}liked{% endif %}" onclick="likePost(event, '{{ post.filename }}', this)">
+          ❤️ {{ post.likes|length if post.likes else 0 }} Likes
+        </button>
+
+        <form class="comment-form" onsubmit="submitComment(event, '{{ post.filename }}')">
+          <input type="text" name="comment" placeholder="Add comment..." required>
+          <button type="submit">💬 Comment</button>
+        </form>
+
+        <button class="share-btn" onclick="sharePost('{{ url_for('static', filename='uploads/' + post.filename) }}')">
+          🔄 Share
+        </button>
+
+        {% if user == post.user %}
+          <button onclick="deletePost('{{ post.filename }}', 'post-{{ post.filename }}')">🗑️ Delete</button>
+        {% endif %}
       </div>
 
-      <div class="comments">
-    {% for c in post.comments %}
-      <p><strong>@{{ c.user }}:</strong> {{ c.text }}</p>
-    {% endfor %}
-  </div>
+      <div class="comments" id="comments-{{ post.filename }}">
+        {% for c in post.comments %}
+          <p><strong>@{{ c.user }}:</strong> {{ c.text }}</p>
+        {% endfor %}
+      </div>
     </div>
   {% endfor %}
-</div>
 </main>
+
+<!-- Story Modal -->
+<div id="storyModal" class="story-modal" onclick="closeStory()">
+  <div class="story-content" onclick="event.stopPropagation()">
+    <img id="storyImage" src="" alt="">
+    <p id="storyUser"></p>
+    <div class="story-progress">
+      <div id="progressBar"></div>
+    </div>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <a href="{{ url_for('index') }}" class="active">🏠<span>Home</span></a>
   <a href="{{ url_for('explore') }}">🔍<span>Explore</span></a>
   <a href="{{ url_for('upload') }}" class="upload-btn">➕</a>
   <a href="{{ url_for('feedback') }}">💬<span>Feedback</span></a>
-  <a href="{{ url_for('profile') }}">👤<span>Profile</span></a>
+  <a href="{% if user %}{{ url_for('profile', username=user) }}{% else %}{{ url_for('login') }}{% endif %}">👤<span>Profile</span></a>
 </nav>
 
+<script>
+let storyTimeout;
+
+function openStory(imgSrc, username){
+  document.getElementById('storyImage').src = imgSrc;
+  document.getElementById('storyUser').innerText = username;
+  document.getElementById('storyModal').style.display = 'flex';
+
+  let progress = document.getElementById('progressBar');
+  progress.style.width = '0%';
+  let width = 0;
+  clearInterval(storyTimeout);
+
+  storyTimeout = setInterval(()=>{
+    if(width >= 100){
+      closeStory();
+    } else {
+      width += 1;
+      progress.style.width = width + '%';
+    }
+  }, 50); // 5 seconds per story
+}
+
+function closeStory(){
+  clearInterval(storyTimeout);
+  document.getElementById('storyModal').style.display = 'none';
+}
+</script>
+
+<!-- Include main JS -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
